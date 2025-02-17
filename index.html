@@ -113,16 +113,6 @@
         loadImage("images/moodeng.jpeg", img => mooDengImg = img || null);
         loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
 
-        function changeDirection(event) {
-            const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
-            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
-            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -gridSize, y: 0 };
-            if (key === "ArrowRight" && direction.x === 0) direction = { x: gridSize, y: 0 };
-        }
-
-        document.addEventListener("keydown", changeDirection);
-
         function moveMooDeng() {
             if (!mooDengAppears) return;
             let dx = snake[0].x - mooDeng.x;
@@ -160,6 +150,12 @@
                 memesEaten++;
                 food = generateFood();
                 loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
+                if (memesEaten >= 5 && !mooDengAppears) {
+                    mooDengAppears = true;
+                    mooDeng = generateFood();
+                    setInterval(moveMooDeng, 500);
+                    setTimeout(() => { mooDengAppears = false; }, 15000);
+                }
             } else {
                 snake.pop();
             }
