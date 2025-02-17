@@ -109,20 +109,9 @@
         canvas.height = canvasSize * 1.5;
 
         let gameRunning = true;
-        let justusImg = new Image();
-        justusImg.src = "https://ju5tu5games.github.io/justsnake/images/justus.jpeg";
-        let mooDengImg = new Image();
-        mooDengImg.src = "https://ju5tu5games.github.io/justsnake/images/moodeng.jpeg";
-        let memeImages = [
-            "https://ju5tu5games.github.io/justsnake/memes/confusedguy.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/rollsafe.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/thisisfine.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/distractedboyfriend.jpeg",
-            "https://ju5tu5games.github.io/justsnake/memes/confusedgirl.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/successkid.png"
-        ];
-        let currentMeme = new Image();
-        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
+        let snake = [{ x: 100, y: 100 }];
+        let direction = { x: 0, y: 50 };
+        let food = generateFood();
 
         function restartGame() {
             location.reload();
@@ -144,12 +133,19 @@
             }
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
-                memesEaten++;
                 food = generateFood();
-                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
             } else {
                 snake.pop();
             }
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, 50, 50);
         }
 
         function gameOver() {
