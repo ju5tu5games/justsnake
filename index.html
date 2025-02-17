@@ -113,6 +113,21 @@
         let direction = { x: 0, y: 50 };
         let food = generateFood();
 
+        let justusImg = new Image();
+        justusImg.src = "https://ju5tu5games.github.io/justsnake/images/justus.jpeg";
+        let mooDengImg = new Image();
+        mooDengImg.src = "https://ju5tu5games.github.io/justsnake/images/moodeng.jpeg";
+        let memeImages = [
+            "https://ju5tu5games.github.io/justsnake/memes/confusedguy.webp",
+            "https://ju5tu5games.github.io/justsnake/memes/rollsafe.webp",
+            "https://ju5tu5games.github.io/justsnake/memes/thisisfine.webp",
+            "https://ju5tu5games.github.io/justsnake/memes/distractedboyfriend.jpeg",
+            "https://ju5tu5games.github.io/justsnake/memes/confusedgirl.webp",
+            "https://ju5tu5games.github.io/justsnake/memes/successkid.png"
+        ];
+        let currentMeme = new Image();
+        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
+
         function restartGame() {
             location.reload();
         }
@@ -134,6 +149,7 @@
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 food = generateFood();
+                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
             } else {
                 snake.pop();
             }
@@ -142,16 +158,22 @@
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, 50, 50);
+            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
+            ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
         }
 
         function gameOver() {
             gameRunning = false;
             alert("Game Over! You hit a wall or Moo Deng.");
         }
+
+        document.addEventListener("keydown", event => {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -50 };
+            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 50 };
+            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -50, y: 0 };
+            if (key === "ArrowRight" && direction.x === 0) direction = { x: 50, y: 0 };
+        });
 
         setInterval(() => {
             update();
