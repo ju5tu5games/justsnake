@@ -13,6 +13,7 @@
             height: 100vh;
             margin: 0;
             font-family: 'MS Sans Serif', Arial, sans-serif;
+            overflow: hidden;
         }
         .window {
             background-color: #C0C0C0;
@@ -24,6 +25,7 @@
             display: flex;
             flex-direction: column;
             box-shadow: 5px 5px black;
+            position: relative;
         }
         .title-bar {
             background: navy;
@@ -57,20 +59,24 @@
         canvas {
             width: 100%;
             height: 100%;
+            touch-action: none;
         }
         .back-button {
             background: lightgray;
             border: 2px solid black;
-            padding: 5px;
+            padding: 10px;
             margin: 10px;
             cursor: pointer;
             text-align: center;
             font-size: 14px;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
         }
     </style>
 </head>
 <body>
-
     <div class="window">
         <div class="title-bar">
             Justus vs. Moo Deng
@@ -88,9 +94,10 @@
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 400;
-        canvas.height = 600;
-        
+        let canvasSize = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+        canvas.width = canvasSize;
+        canvas.height = canvasSize * 1.5;
+
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
         let memesEaten = 0;
@@ -100,23 +107,25 @@
         let direction = { x: 0, y: gridSize };
         let food = generateFood();
 
-        let justusImg = new Image();
-        justusImg.src = "images/justus.jpeg";
-        let mooDengImg = new Image();
-        mooDengImg.src = "images/moodeng.jpeg";
-        let memeImages = [
-            "memes/confusedguy.webp",
-            "memes/rollsafe.webp",
-            "memes/thisisfine.webp",
-            "memes/distractedboyfriend.jpeg",
-            "memes/confusedgirl.webp",
-            "memes/successkid.png"
-        ];
-        let currentMeme = new Image();
-        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
+        let startX, startY, endX, endY;
+        document.addEventListener("touchstart", (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        document.addEventListener("touchend", (e) => {
+            endX = e.changedTouches[0].clientX;
+            endY = e.changedTouches[0].clientY;
+            handleSwipe();
+        });
 
-        function restartGame() {
-            location.reload();
+        function handleSwipe() {
+            let dx = endX - startX;
+            let dy = endY - startY;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                direction = dx > 0 ? { x: gridSize, y: 0 } : { x: -gridSize, y: 0 };
+            } else {
+                direction = dy > 0 ? { x: 0, y: gridSize } : { x: 0, y: -gridSize };
+            }
         }
 
         function generateFood() {
@@ -137,7 +146,6 @@
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
                 food = generateFood();
-                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
                 if (memesEaten >= 5 && !mooDengAppears) {
                     mooDengAppears = true;
                     mooDeng = generateFood();
@@ -163,10 +171,13 @@
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, gridSize, gridSize));
-            ctx.drawImage(currentMeme, food.x, food.y, gridSize, gridSize);
+            ctx.fillStyle = "white";
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, gridSize, gridSize);
             if (mooDengAppears) {
-                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, gridSize, gridSize);
+                ctx.fillStyle = "blue";
+                ctx.fillRect(mooDeng.x, mooDeng.y, gridSize, gridSize);
             }
         }
 
@@ -174,14 +185,6 @@
             gameRunning = false;
             alert("Game Over! You hit a wall or Moo Deng.");
         }
-
-        document.addEventListener("keydown", event => {
-            const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
-            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
-            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -gridSize, y: 0 };
-            if (key === "ArrowRight" && direction.x === 0) direction = { x: gridSize, y: 0 };
-        });
 
         setInterval(() => {
             update();
