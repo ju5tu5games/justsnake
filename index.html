@@ -63,10 +63,17 @@
         <button id="restartButton" onclick="restartGame()">Restart</button>
     </div>
 
+    <audio id="eatSound" src="sounds/eat.wav"></audio>
+    <audio id="mooDengSound" src="sounds/mooDeng.wav"></audio>
+    <audio id="gameOverSound" src="sounds/gameover.wav"></audio>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const gameOverWindow = document.getElementById("gameOverWindow");
+        const eatSound = document.getElementById("eatSound");
+        const mooDengSound = document.getElementById("mooDengSound");
+        const gameOverSound = document.getElementById("gameOverSound");
         
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
@@ -88,6 +95,13 @@
             };
         }
 
+        function playSound(sound) {
+            if (sound) {
+                sound.currentTime = 0;
+                sound.play().catch(err => console.error("Sound error:", err));
+            }
+        }
+
         function update() {
             if (!gameRunning) return;
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
@@ -98,10 +112,12 @@
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
+                playSound(eatSound);
                 food = generateFood();
                 if (memesEaten >= 5 && !mooDengAppears) {
                     mooDengAppears = true;
                     mooDeng = generateFood();
+                    playSound(mooDengSound);
                     setInterval(moveMooDeng, 500);
                     setTimeout(() => { mooDengAppears = false; }, 15000);
                 }
@@ -122,7 +138,6 @@
         }
 
         function draw() {
-            console.log("Drawing frame"); // Debugging
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -140,10 +155,14 @@
 
         function gameOver() {
             gameRunning = false;
+            playSound(gameOverSound);
             gameOverWindow.style.display = "block";
         }
 
         document.addEventListener("keydown", event => {
+            if (eatSound.paused) {
+                eatSound.play().catch(err => console.warn("Audio blocked by browser", err));
+            }
             const key = event.key;
             if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
             if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
