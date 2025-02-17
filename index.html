@@ -6,67 +6,90 @@
     <title>Justus vs. Moo Deng</title>
     <style>
         body {
-            background-color: black;
-            color: white;
-            text-align: center;
+            background-color: #008080;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
             font-family: 'MS Sans Serif', Arial, sans-serif;
         }
-        canvas {
-            border: 2px solid white;
-            display: block;
-            margin: auto;
-            image-rendering: pixelated;
-            background-color: #A0A0A0;
-            touch-action: none;
-        }
-        #gameOverWindow {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px;
-            padding: 10px;
+        .window {
             background-color: #C0C0C0;
             border: 3px solid black;
-            text-align: center;
-            font-family: 'MS Sans Serif', Arial, sans-serif;
+            width: 90vw;
+            max-width: 600px;
+            height: 90vh;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
             box-shadow: 5px 5px black;
         }
-        #gameOverTitle {
+        .title-bar {
             background: navy;
             color: white;
             padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-weight: bold;
         }
-        #gameOverText {
-            margin: 15px 0;
+        .title-buttons {
+            display: flex;
+            gap: 5px;
         }
-        #restartButton {
-            padding: 5px 15px;
-            font-family: 'MS Sans Serif', Arial, sans-serif;
-            border: 2px solid black;
-            background: lightgray;
+        .title-buttons button {
+            width: 15px;
+            height: 15px;
+            font-size: 10px;
+            background: gray;
+            border: 1px solid black;
             cursor: pointer;
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: black;
+            overflow: hidden;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .back-button {
+            background: lightgray;
+            border: 2px solid black;
+            padding: 5px;
+            margin: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Justus vs. Moo Deng</h1>
-    <p>Eat memes to grow. But beware… Moo Deng watches.</p>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-    
-    <div id="gameOverWindow">
-        <div id="gameOverTitle">Error</div>
-        <div id="gameOverText">Game Over! You hit a wall or Moo Deng.</div>
-        <button id="restartButton" onclick="restartGame()">Restart</button>
+    <div class="window">
+        <div class="title-bar">
+            Justus vs. Moo Deng
+            <div class="title-buttons">
+                <button onclick="window.location.href='https://justus.fyi'">⬅</button>
+                <button onclick="window.close()">X</button>
+            </div>
+        </div>
+        <div class="content">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+        <div class="back-button" onclick="window.location.href='https://justus.fyi'">⬅ Back to Justus.fyi</div>
     </div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        const gameOverWindow = document.getElementById("gameOverWindow");
+        canvas.width = 400;
+        canvas.height = 600;
         
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
@@ -103,12 +126,6 @@
             };
         }
 
-        function checkCollisionWithMooDeng() {
-            if (mooDengAppears && snake[0].x === mooDeng.x && snake[0].y === mooDeng.y) {
-                gameOver();
-            }
-        }
-
         function update() {
             if (!gameRunning) return;
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
@@ -130,7 +147,6 @@
             } else {
                 snake.pop();
             }
-            checkCollisionWithMooDeng();
         }
 
         function moveMooDeng() {
@@ -142,7 +158,6 @@
             } else {
                 mooDeng.y += dy > 0 ? gridSize : -gridSize;
             }
-            checkCollisionWithMooDeng();
         }
 
         function draw() {
@@ -157,7 +172,7 @@
 
         function gameOver() {
             gameRunning = false;
-            gameOverWindow.style.display = "block";
+            alert("Game Over! You hit a wall or Moo Deng.");
         }
 
         document.addEventListener("keydown", event => {
