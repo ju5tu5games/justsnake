@@ -63,17 +63,10 @@
         <button id="restartButton" onclick="restartGame()">Restart</button>
     </div>
 
-    <audio id="eatSound" src="sounds/eat.wav"></audio>
-    <audio id="mooDengSound" src="sounds/mooDeng.wav"></audio>
-    <audio id="gameOverSound" src="sounds/gameover.wav"></audio>
-
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const gameOverWindow = document.getElementById("gameOverWindow");
-        const eatSound = document.getElementById("eatSound");
-        const mooDengSound = document.getElementById("mooDengSound");
-        const gameOverSound = document.getElementById("gameOverSound");
         
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
@@ -95,9 +88,25 @@
             };
         }
 
-        function checkCollisionWithMooDeng() {
-            if (mooDengAppears && snake[0].x === mooDeng.x && snake[0].y === mooDeng.y) {
+        function update() {
+            if (!gameRunning) return;
+            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
                 gameOver();
+                return;
+            }
+            snake.unshift(newHead);
+            if (newHead.x === food.x && newHead.y === food.y) {
+                memesEaten++;
+                food = generateFood();
+                if (memesEaten >= 5 && !mooDengAppears) {
+                    mooDengAppears = true;
+                    mooDeng = generateFood();
+                    setInterval(moveMooDeng, 500);
+                    setTimeout(() => { mooDengAppears = false; }, 15000);
+                }
+            } else {
+                snake.pop();
             }
         }
 
@@ -110,46 +119,27 @@
             } else {
                 mooDeng.y += dy > 0 ? gridSize : -gridSize;
             }
-            checkCollisionWithMooDeng();
-        }
-
-        function update() {
-            if (!gameRunning) return;
-            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                gameOver();
-                return;
-            }
-            snake.unshift(newHead);
-            if (newHead.x === food.x && newHead.y === food.y) {
-                memesEaten++;
-                eatSound.play();
-                food = generateFood();
-                if (memesEaten >= 5 && !mooDengAppears) {
-                    mooDengAppears = true;
-                    mooDeng = generateFood();
-                    mooDengSound.play();
-                    setInterval(moveMooDeng, 500);
-                    setTimeout(() => { mooDengAppears = false; }, 15000);
-                }
-            } else {
-                snake.pop();
-            }
         }
 
         function draw() {
+            console.log("Drawing frame"); // Debugging
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "white";
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
+            
+            ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, gridSize, gridSize);
+            
             if (mooDengAppears) {
+                ctx.fillStyle = "blue";
                 ctx.fillRect(mooDeng.x, mooDeng.y, gridSize, gridSize);
             }
         }
 
         function gameOver() {
             gameRunning = false;
-            gameOverSound.play();
             gameOverWindow.style.display = "block";
         }
 
