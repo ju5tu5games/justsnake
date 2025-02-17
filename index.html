@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justus vs. Moo Deng</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid white;
+            display: block;
+            margin: auto;
+            image-rendering: pixelated;
+            background-color: #A0A0A0;
+            touch-action: none;
+        }
+        #gameOverWindow {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 10px;
+            background-color: #C0C0C0;
+            border: 3px solid black;
+            text-align: center;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            box-shadow: 5px 5px black;
+        }
+        #gameOverTitle {
+            background: navy;
+            color: white;
+            padding: 5px;
+            font-weight: bold;
+        }
+        #gameOverText {
+            margin: 15px 0;
+        }
+        #restartButton {
+            padding: 5px 15px;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            border: 2px solid black;
+            background: lightgray;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Justus vs. Moo Deng</h1>
+    <p>Eat memes to grow. But beware… Moo Deng watches.</p>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    
+    <div id="gameOverWindow">
+        <div id="gameOverTitle">Error</div>
+        <div id="gameOverText">Game Over! You hit a wall or Moo Deng.</div>
+        <button id="restartButton" onclick="restartGame()">Restart</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const gameOverWindow = document.getElementById("gameOverWindow");
+        let mooDengAppears = false;
+        let mooDeng = { x: 0, y: 0 };
+        let memesEaten = 0;
+        let gameRunning = true;
+        const gridSize = 50;
+        let snake = [{ x: 100, y: 100 }];
+        let direction = { x: 0, y: gridSize };
+        let food = generateFood();
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        function restartGame() {
+            location.reload();
+        }
+
+        function generateFood() {
+            return {
+                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+            };
+        }
+
+        function loadImage(src, callback) {
+            const img = new Image();
+            img.onload = () => callback(img);
+            img.onerror = () => {
+                console.error("Failed to load image:", src);
+                callback(null);
+            };
+            img.src = src;
+        }
+
+        let justusImg, mooDengImg, currentMeme;
+        const memeImages = [
+            "memes/confusedguy.webp",
+            "memes/rollsafe.webp",
+            "memes/thisisfine.webp",
+            "memes/distractedboyfriend.jpeg",
+            "memes/confusedgirl.webp",
+            "memes/successkid.png"
+        ];
+
+        loadImage("images/justus.jpeg", img => justusImg = img || null);
+        loadImage("images/moodeng.jpeg", img => mooDengImg = img || null);
+        loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
+
+        function changeDirection(event) {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
+            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
+            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -gridSize, y: 0 };
+            if (key === "ArrowRight" && direction.x === 0) direction = { x: gridSize, y: 0 };
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (justusImg) {
+                snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, gridSize, gridSize));
+            }
+            if (currentMeme) {
+                ctx.drawImage(currentMeme, food.x, food.y, gridSize, gridSize);
+            }
+            if (mooDengAppears && mooDengImg) {
+                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, gridSize, gridSize);
+            }
+        }
+
+        function update() {
+            if (!gameRunning) return;
+            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
+                gameOver();
+                return;
+            }
+            snake.unshift(newHead);
+            if (newHead.x === food.x && newHead.y === food.y) {
+                memesEaten++;
+                food = generateFood();
+                loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
+            } else {
+                snake.pop();
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            gameOverWindow.style.display = "block";
+        }
+
+        document.addEventListener("keydown", changeDirection);
+        setInterval(() => {
+            update();
+            draw();
+        }, 200);
+    </script>
+</body>
+</html>
