@@ -63,9 +63,9 @@
         <button id="restartButton" onclick="restartGame()">Restart</button>
     </div>
 
-    <audio id="eatSound" src="sounds/eat.mp3"></audio>
-    <audio id="mooDengSound" src="sounds/mooDeng.mp3"></audio>
-    <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>
+    <audio id="eatSound" src="sounds/eat.wav"></audio>
+    <audio id="mooDengSound" src="sounds/mooDeng.wav"></audio>
+    <audio id="gameOverSound" src="sounds/gameover.wav"></audio>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -95,29 +95,23 @@
             };
         }
 
-        function loadImage(src, callback) {
-            const img = new Image();
-            img.onload = () => callback(img);
-            img.onerror = () => {
-                console.error("Failed to load image:", src);
-                callback(null);
-            };
-            img.src = src;
+        function checkCollisionWithMooDeng() {
+            if (mooDengAppears && snake[0].x === mooDeng.x && snake[0].y === mooDeng.y) {
+                gameOver();
+            }
         }
 
-        let justusImg, mooDengImg, currentMeme;
-        const memeImages = [
-            "memes/confusedguy.webp",
-            "memes/rollsafe.webp",
-            "memes/thisisfine.webp",
-            "memes/distractedboyfriend.jpeg",
-            "memes/confusedgirl.webp",
-            "memes/successkid.png"
-        ];
-
-        loadImage("images/justus.jpeg", img => justusImg = img || null);
-        loadImage("images/moodeng.jpeg", img => mooDengImg = img || null);
-        loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
+        function moveMooDeng() {
+            if (!mooDengAppears) return;
+            let dx = snake[0].x - mooDeng.x;
+            let dy = snake[0].y - mooDeng.y;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                mooDeng.x += dx > 0 ? gridSize : -gridSize;
+            } else {
+                mooDeng.y += dy > 0 ? gridSize : -gridSize;
+            }
+            checkCollisionWithMooDeng();
+        }
 
         function update() {
             if (!gameRunning) return;
@@ -131,7 +125,6 @@
                 memesEaten++;
                 eatSound.play();
                 food = generateFood();
-                loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
                 if (memesEaten >= 5 && !mooDengAppears) {
                     mooDengAppears = true;
                     mooDeng = generateFood();
@@ -144,28 +137,13 @@
             }
         }
 
-        function moveMooDeng() {
-            if (!mooDengAppears) return;
-            let dx = snake[0].x - mooDeng.x;
-            let dy = snake[0].y - mooDeng.y;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                mooDeng.x += dx > 0 ? gridSize : -gridSize;
-            } else {
-                mooDeng.y += dy > 0 ? gridSize : -gridSize;
-            }
-        }
-
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            if (justusImg) {
-                snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, gridSize, gridSize));
-            }
-            if (currentMeme) {
-                ctx.drawImage(currentMeme, food.x, food.y, gridSize, gridSize);
-            }
-            if (mooDengAppears && mooDengImg) {
-                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, gridSize, gridSize);
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
+            ctx.fillRect(food.x, food.y, gridSize, gridSize);
+            if (mooDengAppears) {
+                ctx.fillRect(mooDeng.x, mooDeng.y, gridSize, gridSize);
             }
         }
 
