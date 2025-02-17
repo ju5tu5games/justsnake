@@ -63,17 +63,10 @@
         <button id="restartButton" onclick="restartGame()">Restart</button>
     </div>
 
-    <audio id="eatSound" src="sounds/eat.wav"></audio>
-    <audio id="mooDengSound" src="sounds/mooDeng.wav"></audio>
-    <audio id="gameOverSound" src="sounds/gameover.wav"></audio>
-
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const gameOverWindow = document.getElementById("gameOverWindow");
-        const eatSound = document.getElementById("eatSound");
-        const mooDengSound = document.getElementById("mooDengSound");
-        const gameOverSound = document.getElementById("gameOverSound");
         
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
@@ -83,6 +76,21 @@
         let snake = [{ x: 100, y: 100 }];
         let direction = { x: 0, y: gridSize };
         let food = generateFood();
+
+        let justusImg = new Image();
+        justusImg.src = "images/justus.jpeg";
+        let mooDengImg = new Image();
+        mooDengImg.src = "images/moodeng.jpeg";
+        let memeImages = [
+            "memes/confusedguy.webp",
+            "memes/rollsafe.webp",
+            "memes/thisisfine.webp",
+            "memes/distractedboyfriend.jpeg",
+            "memes/confusedgirl.webp",
+            "memes/successkid.png"
+        ];
+        let currentMeme = new Image();
+        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
 
         function restartGame() {
             location.reload();
@@ -95,13 +103,6 @@
             };
         }
 
-        function playSound(sound) {
-            if (sound) {
-                sound.currentTime = 0;
-                sound.play().catch(err => console.error("Sound error:", err));
-            }
-        }
-
         function update() {
             if (!gameRunning) return;
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
@@ -112,12 +113,11 @@
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
-                playSound(eatSound);
                 food = generateFood();
+                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
                 if (memesEaten >= 5 && !mooDengAppears) {
                     mooDengAppears = true;
                     mooDeng = generateFood();
-                    playSound(mooDengSound);
                     setInterval(moveMooDeng, 500);
                     setTimeout(() => { mooDengAppears = false; }, 15000);
                 }
@@ -140,29 +140,19 @@
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = "white";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
-            
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, gridSize, gridSize);
-            
+            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, gridSize, gridSize));
+            ctx.drawImage(currentMeme, food.x, food.y, gridSize, gridSize);
             if (mooDengAppears) {
-                ctx.fillStyle = "blue";
-                ctx.fillRect(mooDeng.x, mooDeng.y, gridSize, gridSize);
+                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, gridSize, gridSize);
             }
         }
 
         function gameOver() {
             gameRunning = false;
-            playSound(gameOverSound);
             gameOverWindow.style.display = "block";
         }
 
         document.addEventListener("keydown", event => {
-            if (eatSound.paused) {
-                eatSound.play().catch(err => console.warn("Audio blocked by browser", err));
-            }
             const key = event.key;
             if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -gridSize };
             if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: gridSize };
