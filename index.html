@@ -55,24 +55,31 @@
             align-items: center;
             background: black;
             overflow: hidden;
+            position: relative;
         }
         canvas {
             width: 100%;
             height: 100%;
             touch-action: none;
         }
-        .back-button {
+        .button-container {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .game-button {
             background: lightgray;
             border: 2px solid black;
             padding: 10px;
-            margin: 10px;
             cursor: pointer;
             text-align: center;
             font-size: 14px;
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+        }
+        .game-button:hover {
+            background: gray;
         }
     </style>
 </head>
@@ -88,7 +95,10 @@
         <div class="content">
             <canvas id="gameCanvas"></canvas>
         </div>
-        <div class="back-button" onclick="window.location.href='https://justus.fyi'">⬅ Back to Justus.fyi</div>
+        <div class="button-container">
+            <div class="game-button" onclick="restartGame()">🔄 Restart</div>
+            <div class="game-button" onclick="window.location.href='https://justus.fyi'">⬅ Back to Justus.fyi</div>
+        </div>
     </div>
 
     <script>
@@ -98,40 +108,29 @@
         canvas.width = canvasSize;
         canvas.height = canvasSize * 1.5;
 
-        let mooDengAppears = false;
-        let mooDeng = { x: 0, y: 0 };
-        let memesEaten = 0;
-        let gameRunning = true;
-        const gridSize = 50;
-        let snake = [{ x: 100, y: 100 }];
-        let direction = { x: 0, y: gridSize };
-        let food = generateFood();
+        let justusImg = new Image();
+        justusImg.src = "images/justus.jpeg";
+        let mooDengImg = new Image();
+        mooDengImg.src = "images/moodeng.jpeg";
+        let memeImages = [
+            "memes/confusedguy.webp",
+            "memes/rollsafe.webp",
+            "memes/thisisfine.webp",
+            "memes/distractedboyfriend.jpeg",
+            "memes/confusedgirl.webp",
+            "memes/successkid.png"
+        ];
+        let currentMeme = new Image();
+        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
 
-        let startX, startY, endX, endY;
-        document.addEventListener("touchstart", (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        });
-        document.addEventListener("touchend", (e) => {
-            endX = e.changedTouches[0].clientX;
-            endY = e.changedTouches[0].clientY;
-            handleSwipe();
-        });
-
-        function handleSwipe() {
-            let dx = endX - startX;
-            let dy = endY - startY;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                direction = dx > 0 ? { x: gridSize, y: 0 } : { x: -gridSize, y: 0 };
-            } else {
-                direction = dy > 0 ? { x: 0, y: gridSize } : { x: 0, y: -gridSize };
-            }
+        function restartGame() {
+            location.reload();
         }
 
         function generateFood() {
             return {
-                x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-                y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize
+                x: Math.floor(Math.random() * (canvas.width / 50)) * 50,
+                y: Math.floor(Math.random() * (canvas.height / 50)) * 50
             };
         }
 
@@ -146,38 +145,19 @@
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
                 food = generateFood();
-                if (memesEaten >= 5 && !mooDengAppears) {
-                    mooDengAppears = true;
-                    mooDeng = generateFood();
-                    setInterval(moveMooDeng, 500);
-                    setTimeout(() => { mooDengAppears = false; }, 15000);
-                }
+                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
             } else {
                 snake.pop();
-            }
-        }
-
-        function moveMooDeng() {
-            if (!mooDengAppears) return;
-            let dx = snake[0].x - mooDeng.x;
-            let dy = snake[0].y - mooDeng.y;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                mooDeng.x += dx > 0 ? gridSize : -gridSize;
-            } else {
-                mooDeng.y += dy > 0 ? gridSize : -gridSize;
             }
         }
 
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "white";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, gridSize, gridSize));
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, gridSize, gridSize);
+            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
+            ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
             if (mooDengAppears) {
-                ctx.fillStyle = "blue";
-                ctx.fillRect(mooDeng.x, mooDeng.y, gridSize, gridSize);
+                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
             }
         }
 
