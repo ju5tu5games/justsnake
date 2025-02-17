@@ -112,6 +112,9 @@
         let snake = [{ x: 100, y: 100 }];
         let direction = { x: 0, y: 50 };
         let food = generateFood();
+        let memesEaten = 0;
+        let mooDengAppears = false;
+        let mooDeng = { x: 0, y: 0 };
 
         let justusImg = new Image();
         justusImg.src = "https://ju5tu5games.github.io/justsnake/images/justus.jpeg";
@@ -148,8 +151,14 @@
             }
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
+                memesEaten++;
                 food = generateFood();
                 currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
+                if (memesEaten >= 5 && !mooDengAppears) {
+                    mooDengAppears = true;
+                    mooDeng = generateFood();
+                    setTimeout(() => { mooDengAppears = false; }, 15000);
+                }
             } else {
                 snake.pop();
             }
@@ -160,20 +169,15 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
             ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
+            if (mooDengAppears) {
+                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
+            }
         }
 
         function gameOver() {
             gameRunning = false;
             alert("Game Over! You hit a wall or Moo Deng.");
         }
-
-        document.addEventListener("keydown", event => {
-            const key = event.key;
-            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -50 };
-            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 50 };
-            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -50, y: 0 };
-            if (key === "ArrowRight" && direction.x === 0) direction = { x: 50, y: 0 };
-        });
 
         setInterval(() => {
             update();
