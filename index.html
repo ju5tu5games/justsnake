@@ -63,10 +63,18 @@
         <button id="restartButton" onclick="restartGame()">Restart</button>
     </div>
 
+    <audio id="eatSound" src="sounds/eat.mp3"></audio>
+    <audio id="mooDengSound" src="sounds/mooDeng.mp3"></audio>
+    <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>
+
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         const gameOverWindow = document.getElementById("gameOverWindow");
+        const eatSound = document.getElementById("eatSound");
+        const mooDengSound = document.getElementById("mooDengSound");
+        const gameOverSound = document.getElementById("gameOverSound");
+        
         let mooDengAppears = false;
         let mooDeng = { x: 0, y: 0 };
         let memesEaten = 0;
@@ -121,13 +129,13 @@
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
-                console.log("Memes Eaten:", memesEaten);
+                eatSound.play();
                 food = generateFood();
                 loadImage(memeImages[Math.floor(Math.random() * memeImages.length)], img => currentMeme = img || null);
                 if (memesEaten >= 5 && !mooDengAppears) {
                     mooDengAppears = true;
                     mooDeng = generateFood();
-                    console.log("Moo Deng Appears!");
+                    mooDengSound.play();
                     setInterval(moveMooDeng, 500);
                     setTimeout(() => { mooDengAppears = false; }, 15000);
                 }
@@ -163,6 +171,7 @@
 
         function gameOver() {
             gameRunning = false;
+            gameOverSound.play();
             gameOverWindow.style.display = "block";
         }
 
