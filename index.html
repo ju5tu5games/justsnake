@@ -108,6 +108,7 @@
         canvas.width = canvasSize;
         canvas.height = canvasSize * 1.5;
 
+        let gameRunning = true;
         let justusImg = new Image();
         justusImg.src = "https://ju5tu5games.github.io/justsnake/images/justus.jpeg";
         let mooDengImg = new Image();
@@ -148,16 +149,6 @@
                 currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
             } else {
                 snake.pop();
-            }
-        }
-
-        function draw() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
-            ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
-            if (mooDengAppears) {
-                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
             }
         }
 
