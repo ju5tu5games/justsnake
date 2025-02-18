@@ -179,6 +179,14 @@
             alert("Game Over! You hit a wall or Moo Deng.");
         }
 
+        document.addEventListener("keydown", event => {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -50 };
+            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 50 };
+            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -50, y: 0 };
+            if (key === "ArrowRight" && direction.x === 0) direction = { x: 50, y: 0 };
+        });
+
         setInterval(() => {
             update();
             draw();
