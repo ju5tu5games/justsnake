@@ -63,6 +63,7 @@
             width: 100%;
             height: 100%;
             touch-action: none;
+            background-color: black;
         }
         .button-container {
             margin-top: 10px;
@@ -117,21 +118,6 @@
         let mooDeng = { x: 0, y: 0 };
         let speed = 200;
 
-        let justusImg = new Image();
-        justusImg.src = "https://ju5tu5games.github.io/justsnake/images/justus.jpeg";
-        let mooDengImg = new Image();
-        mooDengImg.src = "https://ju5tu5games.github.io/justsnake/images/moodeng.jpeg";
-        let memeImages = [
-            "https://ju5tu5games.github.io/justsnake/memes/confusedguy.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/rollsafe.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/thisisfine.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/distractedboyfriend.jpeg",
-            "https://ju5tu5games.github.io/justsnake/memes/confusedgirl.webp",
-            "https://ju5tu5games.github.io/justsnake/memes/successkid.png"
-        ];
-        let currentMeme = new Image();
-        currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
-
         function restartGame() {
             location.reload();
         }
@@ -152,6 +138,18 @@
             } else {
                 mooDeng.y += dy > 0 ? 50 : -50;
             }
+        }
+
+        function update() {
+            if (!gameRunning) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function draw() {
+            ctx.fillStyle = "white";
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
         }
 
         document.addEventListener("keydown", event => {
