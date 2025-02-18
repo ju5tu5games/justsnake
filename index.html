@@ -129,22 +129,12 @@
             };
         }
 
-        function moveMooDeng() {
-            if (!mooDengAppears) return;
-            let dx = snake[0].x - mooDeng.x;
-            let dy = snake[0].y - mooDeng.y;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                mooDeng.x += dx > 0 ? 50 : -50;
-            } else {
-                mooDeng.y += dy > 0 ? 50 : -50;
-            }
-        }
-
         function update() {
             if (!gameRunning) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            draw();
         }
 
         function draw() {
@@ -161,9 +151,7 @@
         });
 
         setInterval(() => {
-            moveMooDeng();
             update();
-            draw();
         }, speed);
     </script>
 </body>
