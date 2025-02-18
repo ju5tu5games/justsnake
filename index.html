@@ -131,12 +131,6 @@
             "https://ju5tu5games.github.io/justsnake/memes/successkid.png"
         ];
 
-        let currentMeme = new Image();
-        function setRandomMeme() {
-            currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
-        }
-        setRandomMeme();
-
         function restartGame() {
             location.reload();
         }
@@ -148,18 +142,37 @@
             };
         }
 
+        function moveSnake() {
+            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
+                gameRunning = false;
+                alert("Game Over! You hit the wall.");
+                return;
+            }
+            snake.unshift(newHead);
+            if (newHead.x === food.x && newHead.y === food.y) {
+                memesEaten++;
+                food = generateFood();
+                if (memesEaten >= 5 && !mooDengAppears) {
+                    mooDengAppears = true;
+                    mooDeng = generateFood();
+                }
+            } else {
+                snake.pop();
+            }
+        }
+
         function update() {
             if (!gameRunning) return;
             moveSnake();
-            moveMooDeng();
             draw();
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
             snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
+            let currentMeme = new Image();
+            currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
             ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
             if (mooDengAppears) {
                 ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
