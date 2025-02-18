@@ -144,34 +144,6 @@
             };
         }
 
-        function update() {
-            if (!gameRunning) return;
-            moveSnake();
-            moveMooDeng();
-            draw();
-        }
-
-        function moveSnake() {
-            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                gameRunning = false;
-                alert("Game Over! You hit the wall.");
-                return;
-            }
-            snake.unshift(newHead);
-            if (newHead.x === food.x && newHead.y === food.y) {
-                memesEaten++;
-                food = generateFood();
-                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
-                if (memesEaten >= 5 && !mooDengAppears) {
-                    mooDengAppears = true;
-                    mooDeng = generateFood();
-                }
-            } else {
-                snake.pop();
-            }
-        }
-
         function moveMooDeng() {
             if (!mooDengAppears) return;
             let dx = snake[0].x - mooDeng.x;
@@ -181,6 +153,17 @@
             } else {
                 mooDeng.y += dy > 0 ? 50 : -50;
             }
+            if (mooDeng.x === snake[0].x && mooDeng.y === snake[0].y) {
+                gameRunning = false;
+                alert("Game Over! Moo Deng got you.");
+            }
+        }
+
+        function update() {
+            if (!gameRunning) return;
+            moveSnake();
+            moveMooDeng();
+            draw();
         }
 
         function draw() {
