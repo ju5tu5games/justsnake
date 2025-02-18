@@ -153,40 +153,16 @@
             }
         }
 
-        function update() {
-            if (!gameRunning) return;
-            const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-            if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                gameOver();
-                return;
-            }
-            snake.unshift(newHead);
-            if (newHead.x === food.x && newHead.y === food.y) {
-                memesEaten++;
-                food = generateFood();
-                currentMeme.src = memeImages[Math.floor(Math.random() * memeImages.length)];
-                if (memesEaten >= 5 && !mooDengAppears) {
-                    mooDengAppears = true;
-                    mooDeng = generateFood();
-                    setInterval(moveMooDeng, 500);
-                    setTimeout(() => { mooDengAppears = false; }, 15000);
-                }
-            } else {
-                snake.pop();
-            }
-        }
-
-        function draw() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
-            ctx.drawImage(currentMeme, food.x, food.y, 50, 50);
-            if (mooDengAppears) {
-                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
-            }
-        }
+        document.addEventListener("keydown", event => {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) direction = { x: 0, y: -50 };
+            if (key === "ArrowDown" && direction.y === 0) direction = { x: 0, y: 50 };
+            if (key === "ArrowLeft" && direction.x === 0) direction = { x: -50, y: 0 };
+            if (key === "ArrowRight" && direction.x === 0) direction = { x: 50, y: 0 };
+        });
 
         setInterval(() => {
+            moveMooDeng();
             update();
             draw();
         }, 200);
