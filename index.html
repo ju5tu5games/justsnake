@@ -161,7 +161,12 @@
         }
 
         function draw() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height); // Ensure background is drawn first
+            // Clear the canvas before redrawing
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill with black background
             ctx.fillStyle = "green";
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
             ctx.fillStyle = "red";
