@@ -16,23 +16,6 @@
             overflow: hidden;
             flex-direction: column;
         }
-        .loading-screen {
-            width: 100vw;
-            height: 100vh;
-            background: black;
-            color: lime;
-            font-family: monospace;
-            font-size: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .hidden {
-            display: none;
-        }
         .window {
             background-color: #C0C0C0;
             border: 3px solid black;
@@ -102,8 +85,7 @@
     </style>
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">LOADING... PLEASE WAIT</div>
-    <div class="window hidden" id="gameWindow">
+    <div class="window">
         <div class="title-bar">
             Justus vs. Moo Deng
             <div class="title-buttons">
@@ -120,11 +102,6 @@
         <div class="game-button" onclick="window.location.href='https://justus.fyi'">⬅ Back to Justus.fyi</div>
     </div>
     <script>
-        setTimeout(() => {
-            document.getElementById("loadingScreen").classList.add("hidden");
-            document.getElementById("gameWindow").classList.remove("hidden");
-        }, 3000);
-
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         canvas.width = 600;
@@ -137,6 +114,10 @@
         let mooDeng = { x: 0, y: 0, active: false };
         let memesEaten = 0;
         let speed = 200;
+
+        function restartGame() {
+            location.reload();
+        }
 
         function generateFood() {
             return {
