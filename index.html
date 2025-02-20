@@ -65,6 +65,19 @@
             touch-action: none;
             background-color: black;
         }
+        .game-over-screen {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 3px solid black;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            box-shadow: 5px 5px black;
+        }
         .button-container {
             margin-top: 10px;
             display: flex;
@@ -95,6 +108,10 @@
         </div>
         <div class="content">
             <canvas id="gameCanvas"></canvas>
+            <div id="gameOverScreen" class="game-over-screen">
+                <p>Game Over! You hit the wall.</p>
+                <button onclick="restartGame()">🔄 Restart</button>
+            </div>
         </div>
     </div>
     <div class="button-container">
@@ -112,19 +129,13 @@
         let direction = { x: 50, y: 0 };
         let food = generateFood();
         let mooDeng = { x: 0, y: 0, active: false };
-        let memesEaten = 0;
+        let memesEaten = localStorage.getItem("highScore") || 0;
         let speed = 200;
-
-        let foodImage = new Image();
-        foodImage.src = "images/meme.png";
-        let mooDengImage = new Image();
-        mooDengImage.src = "images/moodeng.png";
-        let snakeImage = new Image();
-        snakeImage.src = "images/justus.png";
 
         document.addEventListener("keydown", changeDirection);
 
         function restartGame() {
+            localStorage.setItem("highScore", Math.max(memesEaten, localStorage.getItem("highScore") || 0));
             location.reload();
         }
 
@@ -151,8 +162,8 @@
         function moveSnake() {
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                alert("Game Over! You hit the wall.");
                 gameRunning = false;
+                document.getElementById("gameOverScreen").style.display = "block";
                 return;
             }
             snake.unshift(newHead);
@@ -171,10 +182,13 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => ctx.drawImage(snakeImage, segment.x, segment.y, 50, 50));
-            ctx.drawImage(foodImage, food.x, food.y, 50, 50);
+            ctx.fillStyle = "green";
+            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, 50, 50);
             if (mooDeng.active) {
-                ctx.drawImage(mooDengImage, mooDeng.x, mooDeng.y, 50, 50);
+                ctx.fillStyle = "blue";
+                ctx.fillRect(mooDeng.x, mooDeng.y, 50, 50);
             }
         }
 
