@@ -115,6 +115,15 @@
         let memesEaten = 0;
         let speed = 200;
 
+        let foodImage = new Image();
+        foodImage.src = "images/meme.png";
+        let mooDengImage = new Image();
+        mooDengImage.src = "images/moodeng.png";
+        let snakeImage = new Image();
+        snakeImage.src = "images/justus.png";
+
+        document.addEventListener("keydown", changeDirection);
+
         function restartGame() {
             location.reload();
         }
@@ -126,10 +135,24 @@
             };
         }
 
+        function changeDirection(event) {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) {
+                direction = { x: 0, y: -50 };
+            } else if (key === "ArrowDown" && direction.y === 0) {
+                direction = { x: 0, y: 50 };
+            } else if (key === "ArrowLeft" && direction.x === 0) {
+                direction = { x: -50, y: 0 };
+            } else if (key === "ArrowRight" && direction.x === 0) {
+                direction = { x: 50, y: 0 };
+            }
+        }
+
         function moveSnake() {
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
                 alert("Game Over! You hit the wall.");
+                gameRunning = false;
                 return;
             }
             snake.unshift(newHead);
@@ -148,12 +171,10 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, 50, 50);
+            snake.forEach(segment => ctx.drawImage(snakeImage, segment.x, segment.y, 50, 50));
+            ctx.drawImage(foodImage, food.x, food.y, 50, 50);
             if (mooDeng.active) {
-                ctx.fillStyle = "blue";
-                ctx.fillRect(mooDeng.x, mooDeng.y, 50, 50);
+                ctx.drawImage(mooDengImage, mooDeng.x, mooDeng.y, 50, 50);
             }
         }
 
