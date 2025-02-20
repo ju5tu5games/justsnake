@@ -100,6 +100,20 @@
         let mooDeng = { x: 0, y: 0, active: false };
         let memesEaten = 0;
 
+        // Load images
+        const justusImg = new Image();
+        justusImg.src = 'images/justus.jpeg';
+        justusImg.onload = () => console.log('Justus image loaded successfully');
+        justusImg.onerror = () => console.error('Failed to load Justus image');
+        const memeImg = new Image();
+        memeImg.src = 'memes/distractedboyfriend.jpeg';
+        memeImg.onload = () => console.log('Meme image loaded successfully');
+        memeImg.onerror = () => console.error('Failed to load Meme image');
+        const mooDengImg = new Image();
+        mooDengImg.src = 'images/moodeng.jpeg';
+        mooDengImg.onload = () => console.log('Moo Deng image loaded successfully');
+        mooDengImg.onerror = () => console.error('Failed to load Moo Deng image');
+
         document.addEventListener("keydown", changeDirection);
 
         function restartGame() {
@@ -129,13 +143,18 @@
         function moveSnake() {
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
-                gameRunning = false;
+                gameOver();
                 return;
             }
             snake.unshift(newHead);
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
                 food = generateFood();
+                if (memesEaten >= 5 && !mooDeng.active) {
+                    mooDeng.active = true;
+                    mooDeng.x = generateFood().x;
+                    mooDeng.y = generateFood().y;
+                }
             } else {
                 snake.pop();
             }
@@ -144,10 +163,16 @@
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "green";
-            snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, 50, 50);
+            snake.forEach(segment => ctx.drawImage(justusImg, segment.x, segment.y, 50, 50));
+            ctx.drawImage(memeImg, food.x, food.y, 50, 50);
+            if (mooDeng.active) {
+                ctx.drawImage(mooDengImg, mooDeng.x, mooDeng.y, 50, 50);
+            }
+        }
+
+        function gameOver() {
+            gameRunning = false;
+            alert("Game Over! Refresh to try again.");
         }
 
         function gameLoop() {
