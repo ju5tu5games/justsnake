@@ -94,18 +94,15 @@
         canvas.height = 800;
 
         let gameRunning = true;
-        let snake = [{ x: 100, y: 100 }];
+        let snake = [{ x: 250, y: 250 }];
         let direction = { x: 50, y: 0 };
-        let food = { x: 0, y: 0 };
-        food = generateFood();
+        let food = generateFood();
         let mooDeng = { x: 0, y: 0, active: false };
-        let memesEaten = parseInt(localStorage.getItem("highScore")) || 0;
-        let speed = 200;
+        let memesEaten = 0;
 
         document.addEventListener("keydown", changeDirection);
 
         function restartGame() {
-            localStorage.setItem("highScore", Math.max(memesEaten, localStorage.getItem("highScore") || 0));
             location.reload();
         }
 
@@ -116,30 +113,19 @@
             };
         }
 
-        function moveMooDeng() {
-            if (!mooDeng.active) return;
-            let dx = snake[0].x - mooDeng.x;
-            let dy = snake[0].y - mooDeng.y;
-            if (Math.abs(dx) > Math.abs(dy)) {
-                mooDeng.x += dx > 0 ? 50 : -50;
-            } else {
-                mooDeng.y += dy > 0 ? 50 : -50;
-            }
-            if (mooDeng.x === snake[0].x && mooDeng.y === snake[0].y) {
-                gameRunning = false;
-                document.getElementById("gameCanvas").style.opacity = '0.5'; // Indicate game over
+        function changeDirection(event) {
+            const key = event.key;
+            if (key === "ArrowUp" && direction.y === 0) {
+                direction = { x: 0, y: -50 };
+            } else if (key === "ArrowDown" && direction.y === 0) {
+                direction = { x: 0, y: 50 };
+            } else if (key === "ArrowLeft" && direction.x === 0) {
+                direction = { x: -50, y: 0 };
+            } else if (key === "ArrowRight" && direction.x === 0) {
+                direction = { x: 50, y: 0 };
             }
         }
 
-        function gameLoop() {
-            if (gameRunning) {
-                moveSnake();
-                moveMooDeng();
-                draw();
-                requestAnimationFrame(gameLoop);
-            }
-        }
-        
         function moveSnake() {
             const newHead = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             if (newHead.x < 0 || newHead.x >= canvas.width || newHead.y < 0 || newHead.y >= canvas.height) {
@@ -150,38 +136,28 @@
             if (newHead.x === food.x && newHead.y === food.y) {
                 memesEaten++;
                 food = generateFood();
-                if (memesEaten >= 5 && !mooDeng.active) {
-                    mooDeng.active = true;
-                    mooDeng.x = generateFood().x;
-                    mooDeng.y = generateFood().y;
-                }
             } else {
                 snake.pop();
             }
         }
 
         function draw() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height); // Ensure background is drawn first
-            // Clear the canvas before redrawing
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill with black background
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "green";
             snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 50, 50));
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, 50, 50);
-            if (mooDeng.active) {
-                ctx.fillStyle = "blue";
-                ctx.fillRect(mooDeng.x, mooDeng.y, 50, 50);
-            }
         }
 
-        function startGame() {
-            if (!gameRunning) return;
-            gameLoop();
+        function gameLoop() {
+            if (gameRunning) {
+                moveSnake();
+                draw();
+                setTimeout(() => requestAnimationFrame(gameLoop), 200);
+            }
         }
-        startGame();
+        gameLoop();
     </script>
 </body>
 </html>
