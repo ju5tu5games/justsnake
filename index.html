@@ -86,15 +86,20 @@
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
+        if (!ctx) {
+            console.error("Error: Unable to get 2D context for canvas.");
+            alert("Game cannot start: Canvas not supported.");
+        }
         canvas.width = 600;
         canvas.height = 800;
 
         let gameRunning = true;
         let snake = [{ x: 100, y: 100 }];
         let direction = { x: 50, y: 0 };
-        let food = generateFood();
+        let food = { x: 0, y: 0 };
+        food = generateFood();
         let mooDeng = { x: 0, y: 0, active: false };
-        let memesEaten = localStorage.getItem("highScore") || 0;
+        let memesEaten = parseInt(localStorage.getItem("highScore")) || 0;
         let speed = 200;
 
         document.addEventListener("keydown", changeDirection);
@@ -122,6 +127,7 @@
             }
             if (mooDeng.x === snake[0].x && mooDeng.y === snake[0].y) {
                 gameRunning = false;
+                document.getElementById("gameCanvas").style.opacity = '0.5'; // Indicate game over
             }
         }
 
@@ -166,7 +172,11 @@
             }
         }
 
-        gameLoop(); // Ensure game starts when page loads
+        function startGame() {
+            if (!gameRunning) return;
+            gameLoop();
+        }
+        startGame();
     </script>
 </body>
 </html>
