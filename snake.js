@@ -11,19 +11,26 @@ let score = 0;
 let gameStarted = false;
 let gameInterval;
 
-document.addEventListener("keydown", (e) => {
+function startGame() {
   if (!gameStarted) {
     gameStarted = true;
     gameInterval = setInterval(gameLoop, 150);
   }
+}
 
-  switch (e.key) {
+document.addEventListener("keydown", (e) => {
+  startGame();
+  handleDirection(e.key);
+});
+
+function handleDirection(key) {
+  switch (key) {
     case "ArrowUp": if (velocity.y === 0) velocity = { x: 0, y: -1 }; break;
     case "ArrowDown": if (velocity.y === 0) velocity = { x: 0, y: 1 }; break;
     case "ArrowLeft": if (velocity.x === 0) velocity = { x: -1, y: 0 }; break;
     case "ArrowRight": if (velocity.x === 0) velocity = { x: 1, y: 0 }; break;
   }
-});
+}
 
 function gameLoop() {
   const head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
@@ -73,6 +80,12 @@ function draw() {
   ctx.fillStyle = "#f00";
   ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
+
+// Touch controls
+document.getElementById("btn-up").addEventListener("click", () => { startGame(); handleDirection("ArrowUp"); });
+document.getElementById("btn-down").addEventListener("click", () => { startGame(); handleDirection("ArrowDown"); });
+document.getElementById("btn-left").addEventListener("click", () => { startGame(); handleDirection("ArrowLeft"); });
+document.getElementById("btn-right").addEventListener("click", () => { startGame(); handleDirection("ArrowRight"); });
 
 function initBoard() {
   updateScore();

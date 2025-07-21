@@ -4,13 +4,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex-direction: column;
   margin: 0;
   color: #00ff00;
 }
 
 #game-container {
   text-align: center;
+  max-width: 90vw;
+  margin: 20px auto;
 }
 
 canvas {
@@ -25,4 +27,18 @@ canvas {
 #score {
   margin-top: 10px;
   font-size: 18px;
+}
+
+#controls {
+  margin-top: 15px;
+}
+
+#controls button {
+  font-size: 24px;
+  padding: 10px 15px;
+  margin: 5px;
+  background: #222;
+  color: #0f0;
+  border: 2px solid #0f0;
+  border-radius: 6px;
 }
