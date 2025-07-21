@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>JUSTUS-WORDLE: 98.EXE</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JUSTUS SNAKE</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="game-window">
-    <div class="title-bar">JUSTUS-WORDLE: 98.EXE</div>
-    <div id="board"></div>
-    <input id="guess-input" maxlength="6" autocomplete="off" placeholder="Enter 6-letter guess"/>
-    <button onclick="submitGuess()">Submit</button>
-    <div id="message"></div>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="320" height="320"></canvas>
+    <div id="score">Score: 0</div>
   </div>
-  <div id="overlay" class="hidden"></div>
-  <script src="script.js"></script>
+  <script src="snake.js"></script>
 </body>
 </html>
