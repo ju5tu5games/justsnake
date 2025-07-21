@@ -8,8 +8,15 @@ let snake = [{ x: 10, y: 10 }];
 let food = { x: 5, y: 5 };
 let velocity = { x: 0, y: 0 };
 let score = 0;
+let gameStarted = false;
+let gameInterval;
 
 document.addEventListener("keydown", (e) => {
+  if (!gameStarted) {
+    gameStarted = true;
+    gameInterval = setInterval(gameLoop, 150);
+  }
+
   switch (e.key) {
     case "ArrowUp": if (velocity.y === 0) velocity = { x: 0, y: -1 }; break;
     case "ArrowDown": if (velocity.y === 0) velocity = { x: 0, y: 1 }; break;
@@ -21,13 +28,14 @@ document.addEventListener("keydown", (e) => {
 function gameLoop() {
   const head = { x: snake[0].x + velocity.x, y: snake[0].y + velocity.y };
 
-  // Game over
   if (head.x < 0 || head.y < 0 || head.x >= tileCount || head.y >= tileCount || snake.some(seg => seg.x === head.x && seg.y === head.y)) {
     alert("💀 GAME OVER 💀");
     snake = [{ x: 10, y: 10 }];
     velocity = { x: 0, y: 0 };
     score = 0;
     updateScore();
+    clearInterval(gameInterval);
+    gameStarted = false;
     return;
   }
 
@@ -66,4 +74,9 @@ function draw() {
   ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 }
 
-setInterval(gameLoop, 150);
+function initBoard() {
+  updateScore();
+  draw();
+}
+
+initBoard();
